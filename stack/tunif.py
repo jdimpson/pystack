@@ -5,6 +5,8 @@ import struct
 import subprocess
 
 import utils
+from utils import IFF_TUN, IFF_NO_PI, TUNSETIFF, TUNSETOWNER
+
 
 # Some constants used to ioctl the device file. I got them by a simple C
 # program.
@@ -23,14 +25,19 @@ def bringuptun(hostip,guestip,name="tun0"):
 	fcntl.ioctl(tun, TUNSETOWNER, 1000)
 
 	# Bring it up and assign addresses.
-	subprocess.check_call('ifconfig ' + name + ' ' + hostip + ' pointopoint ' + guestip + ' up',
-	        shell=True)
+	if hostip == "dhcp" or hostip == "DHCP":
+		print "WARNING: tun interfaces do not support DHCP (that I know of). Exiting..."
+		sys.exit(1)
+	subprocess.check_call('ifconfig ' + name + ' ' + hostip + ' pointopoint ' + guestip + ' up', shell=True)
 
 	return tun
 
-
-def readtunippacket(tun):
-	return list(os.read(tun.fileno(), 2048))
+def readtunippacket(tun,dump=False):
+	l = list(os.read(tun.fileno(), 2048))
+	if dump:
+		for x in utils.hexdump(l):
+			print x
+	return l
 
 def writetunippacket(tun,ippacket,dump=False):
 	if dump:

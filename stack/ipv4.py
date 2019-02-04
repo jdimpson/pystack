@@ -1,27 +1,14 @@
-
+from utils import get_bytes,set_bytes,chunker,bytes2word,padded_hex as phex
+import eth
 
 VERSION=4
 ICMPTYPE=0x1
 TCPTYPE=0x6
+UDPTYPE=0x11
 ICMPECHOREQUEST=0x8
 
 ###
-# Util
-###
-def get_bytes(buf,startb,endb):
-	return [ ord(x) for x in buf[startb:endb] ]
-
-def set_bytes(buf,startb,endb,vals):
-	if not isinstance(vals,list):
-		vals = [ vals ]
-	buf[startb:endb] = [ chr(x) for x in vals ]
-
-def chunker(seq,size):
-	for pos in xrange(0,len(seq),size):
-		yield seq[pos:pos+size]
-
-###
-# Header
+# IP Header
 ###
 def PAYLOAD(ippacket):
 	ihl = ipihl(ippacket)
@@ -46,6 +33,9 @@ def getaddress(ippacket,s,e,asbytes=False):
 	b = get_bytes(ippacket,s,e)
 	if asbytes:
 		return b
+	return joinaddress(b)
+
+def joinaddress(b):
 	return '.'.join([str(x) for x in b])
 
 def ipswapaddresses(ippacket):
@@ -167,6 +157,38 @@ def icmpechoresponse(ippacket):
 	ippacket[22] = chr(checksum >> 8)
 	ippacket[23] = chr(checksum & ((1 << 8) -1))
 
+###
+# UDP
+###
+def UDP(ippacket):
+	return PAYLOAD(ippacket) + 8
+
+def udpports(ippacket):
+	# ports
+	h,l = get_bytes(ippacket,PAYLOAD(ippacket)+0,PAYLOAD(ippacket)+2)
+	srcport = h<<8 | l
+	h,l = get_bytes(ippacket,PAYLOAD(ippacket)+2,PAYLOAD(ippacket)+4)
+	dstport = h<<8 | l
+	return srcport, dstport
+
+def udpswapports(ippacket):
+	ippacket[PAYLOAD(ippacket)+0:PAYLOAD(ippacket)+2],ippacket[PAYLOAD(ippacket)+2:PAYLOAD(ippacket)+4] = ippacket[PAYLOAD(ippacket)+2:PAYLOAD(ippacket)+4],ippacket[PAYLOAD(ippacket)+0:PAYLOAD(ippacket)+2]
+
+def udpseglen(ippacket):
+	h,l = get_bytes(ippacket,PAYLOAD(ippacket)+4,PAYLOAD(ippacket)+6)
+	return (h << 8) | l
+
+def set_udpchecksum(ippacket,sum):
+	ck = [(sum & 0xFF00)>>8,(sum & 0x00FF)]
+	set_bytes(ippacket,PAYLOAD(ippacket)+6,PAYLOAD(ippacket)+8,ck)
+
+def udpchecksum(ippacket):
+	h,l = get_bytes(ippacket,PAYLOAD(ippacket)+6,PAYLOAD(ippacket)+8)
+	return (h << 8) | l
+
+def udpcomputechecksum(ippacket):
+	return tcpcomputechecksum(ippacket)
+
 
 ###
 # TCP
@@ -249,14 +271,7 @@ def set_tcpchecksum(ippacket,sum):
 
 def tcpchecksum(ippacket):
 	h,l = get_bytes(ippacket,PAYLOAD(ippacket)+16,PAYLOAD(ippacket)+18)
-	return (l << 8) | l
-
-def bytes2word(bytes):
-	o=0
-	for b in bytes:
-		o=o<<8
-		o=o|b
-	return o
+	return (h << 8) | l
 
 def tcpcomputechecksum(ippacket):
 	sum=0
@@ -315,3 +330,137 @@ def tcpsynrst(ippacket):
 	set_tcpchecksum(ippacket,0)
 	cksum = tcpcomputechecksum(ippacket)
 	set_tcpchecksum(ippacket,cksum)
+
+###
+# DHCP
+###
+
+def dhcpparse(ippacket):
+	op    = get_bytes(ippacket,UDP(ippacket)+0,UDP(ippacket)+1)[0]
+	htype = get_bytes(ippacket,UDP(ippacket)+1,UDP(ippacket)+2)[0]
+	hlen  = get_bytes(ippacket,UDP(ippacket)+2,UDP(ippacket)+3)[0]
+	hops  = get_bytes(ippacket,UDP(ippacket)+3,UDP(ippacket)+4)[0]
+
+	o,t,r,f = get_bytes(ippacket,UDP(ippacket)+4,UDP(ippacket)+8)
+	xid     = (o << 24)|(t << 16)|(r << 8)|f
+
+	h,l  = get_bytes(ippacket,UDP(ippacket)+8,UDP(ippacket)+10)
+	secs = (h << 8)| l
+	h,l   = get_bytes(ippacket,UDP(ippacket)+10,UDP(ippacket)+12)
+	flags = (h << 8)| l
+
+	ciaddr  = getaddress(ippacket,UDP(ippacket)+12,UDP(ippacket)+16)
+	yiaddr  = getaddress(ippacket,UDP(ippacket)+16,UDP(ippacket)+20)
+	siaddr  = getaddress(ippacket,UDP(ippacket)+20,UDP(ippacket)+24)
+	giaddr  = getaddress(ippacket,UDP(ippacket)+24,UDP(ippacket)+28)
+
+	if hlen > 16: hlen = 16
+	#chaddr  = ':'.join([phex(x) for x in get_bytes(ippacket,UDP(ippacket)+28,UDP(ippacket)+28+hlen)])
+	chaddr  = eth.joinaddress(get_bytes(ippacket,UDP(ippacket)+28,UDP(ippacket)+28+hlen))
+	chpad   = ''.join([phex(x) for x in get_bytes(ippacket,UDP(ippacket)+28+hlen,UDP(ippacket)+44)])
+
+	sname   = ''.join([chr(x) for x in get_bytes(ippacket,UDP(ippacket)+44,UDP(ippacket)+108) if x != 0x0])
+
+	file = ''.join([chr(x) for x in get_bytes(ippacket,UDP(ippacket)+108,UDP(ippacket)+236)])
+	cookie = hex(bytes2word(get_bytes(ippacket,UDP(ippacket)+236,UDP(ippacket)+240)))
+	opts = dhcpparseoptions(get_bytes(ippacket,UDP(ippacket)+240,len(ippacket)))
+
+	msgtype = opts["Message Type"]
+
+	print "DHCP message type", msgtype
+	print "DHCP OP   ", op, dhcpop(op)
+	print "DHCP HTYPE", htype
+	print "DHCP HLEN ", hlen
+	print "DHCP HOPS ", hops
+	print "DHCP XID  ", hex(xid)
+	print "DHCP flags", hex(flags)
+
+	print "Client IP Address", ciaddr
+	print "Your IP Address  ", yiaddr
+	print "Server IP Address", siaddr
+	print "Relay IP Address ", giaddr
+
+	print "Client MAC Address", chaddr
+
+	print "Server Name",sname
+
+	print "Magic Cookie", cookie
+
+	print "DHCP Options"
+	for k in opts:
+		v = opts[k]
+		print "{k}\t{v}".format(k=k,v=v)
+
+def dhcpparseoptions(options):
+	opts = {}
+	while len(options) > 0:
+		t = options[0]
+		if t == 255:
+			break
+		l = options[1]
+		args = options[2:2+l]
+		# DHCP Message Type
+		if t == 53:
+			t = "Message Type"
+			args = args[0]
+			args = dhcpmsgtype(args)
+		elif t == 12:
+			t = "Hostname"
+			args = ''.join([chr(x) for x in args])
+		elif t == 61:
+			t = "Client Identifier"
+			hw = args[0]
+			mac = ':'.join([phex(x) for x in args[1:]])
+			args = "hw({hw}) {mac}".format(hw=hw,mac=mac)
+		elif t == 80:
+			t = "Rapid Commit"
+			args = True
+		elif t == 60:
+			t = "Vendor Class Identifier"
+			args = ''.join([chr(x) for x in args])
+		elif t == 116:
+			t = "DHCP autoconfiguration"
+			args = args[0]
+			if args == 1:
+				args = "Autoconfigure"
+		elif t == 55:
+			t = "Parameter request list"
+			args = ' '.join([phex(x) for x in args])
+		elif t == 57:
+			t = "Maximum Message Size"
+			args = args[0]
+		elif t == 145:
+			t = "Forcerenew Nonce Capable"
+			args = True
+
+		opts[t] = args
+		options = options[2+l:]
+	return opts
+
+def dhcpmsgtype(t):
+	if t == 1:
+		return "Discover"
+	elif t == 2:
+		return "Offer"
+	elif t == 3:
+		return "Request"
+	elif t == 4:
+		return "ACK"
+	elif t == 5:
+		return "NAK"
+	elif t == 6:
+		return "Decline"
+	elif t == 7:
+		return "Release"
+	elif t == 8:
+		return "Inform"
+	else:
+		return "Unknown"
+
+def dhcpop(op):
+	if op == 1:
+		return "BOOTREQUEST"
+	elif op == 2:
+		return "BOOTREPLY"
+	else:
+		return "UNKNOWN BOOT OP"
