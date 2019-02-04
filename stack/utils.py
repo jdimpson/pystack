@@ -19,7 +19,7 @@ def ipversion(ippacket):
 
 def padded_hex(val, bits=None, bytes=1):
 	if bits is None: bits = bytes * 8
-	hexlen = (bits / 4)
+	hexlen = int(bits / 4)
 	return "{0:0{1}x}".format(val,hexlen)
 	# 0: first parameter
 	# 0 fill with zeroes
@@ -31,7 +31,8 @@ phex=padded_hex
 def hexlify(s,pad=0):
 	o = ''
 	for b in s:
-		b=ord(b)
+		if isinstance(b,str):
+		    b=ord(b)
 		o += phex(b) + ' '
 	o += '   ' * pad
 	return o
@@ -39,6 +40,8 @@ def hexlify(s,pad=0):
 def safeascii(s):
 	o=''
 	for b in s:
+		if isinstance(b,int):
+			b=chr(b)
 		if ord(b) > 126 or ord(b) < 33:
 			o += '.'
 		else:
@@ -49,7 +52,7 @@ def hexdump(b, width=16):
 	if isinstance(b,list):
 		b = ''.join(b)
 	l=0
-	hw = width / 2
+	hw = int(width / 2)
 	while len(b) > width:
 		chunk1 = b[0:hw]
 		chunk2 = b[hw:width]
