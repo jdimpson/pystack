@@ -1,5 +1,5 @@
-from utils import get_bytes,set_bytes,chunker,padded_hex as phex,bytes2word
-import ipv4
+from .utils import get_bytes,set_bytes,chunker,padded_hex as phex,bytes2word
+from . import ipv4
 
 IPV6TYPE = 0x86dd
 IPV4TYPE = 0x0800
@@ -24,12 +24,12 @@ def PAYLOAD(ethframe):
 	et = ethertype(ethframe)
 	if et < 1536:
 		# not an Ethernet II frame
-		print "Non-Ethernet II frames not yet handled."
+		print("Non-Ethernet II frames not yet handled.")
 		return None
 	if et == VLANTYPE:
 		return 16
 	if et == VLANDBLTYPE:
-		print "VLAN-in-VLAN not yet handled."
+		print("VLAN-in-VLAN not yet handled.")
 		return None
 	return 14
 

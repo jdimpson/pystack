@@ -28,15 +28,15 @@ def icmpidentify(ippacket):
 	return type,code,name	
 
 #			else:
-#				print "ICMPv6 unknown type {t} code {c}".format(t=type,c=code)
-#				print myhexlify(''.join(body))
+#				print("ICMPv6 unknown type {t} code {c}".format(t=type,c=code))
+#				print(myhexlify(''.join(body)))
 #		else:
-#			print "IPv6: unknown next header {nh}".format(nh=hex(nexthdr))
+#			print("IPv6: unknown next header {nh}".format(nh=hex(nexthdr)))
 #	elif ipver == 4:
-#		print "IPv4 packet"
+#		print("IPv4 packet")
 #		ihl   = ord(ippacket[0:1][0]) & 0xF
 #		iphdr = ihl * 4
-#		#print "ippayload: ",[hex(ord(x)) for x in ippacket[iphdr:]]
+#		#print("ippayload: ",[hex(ord(x)) for x in ippacket[iphdr:]])
 #		protocol = ord(ippacket[9:10][0])
 #	
 #		if protocol == 0x1:
@@ -44,11 +44,11 @@ def icmpidentify(ippacket):
 #			type = ord(ippacket[iphdr:][0:1][0])
 #			code = ord(ippacket[iphdr:][1:2][0])
 #			if type == 0x8: # Echo request
-#				print "ICMPv4 Echo Request"
+#				print("ICMPv4 Echo Request")
 #				# Modify it to an ICMP Echo Reply packet.
 #	
 #				if code != 0x0:
-#					print "ICMP: code is {code}, expected 0x0, ignoring descrepency".format(hex(code))
+#					print("ICMP: code is {code}, expected 0x0, ignoring descrepency".format(hex(code)))
 #	
 #				# Swap source and destination address.
 #				ippacket[12:16], ippacket[16:20] = ippacket[16:20], ippacket[12:16]
@@ -74,7 +74,7 @@ def icmpidentify(ippacket):
 #	
 #				do_write = True
 #			else:
-#				print "ICMP: unknown type {type}".format(type=hex(type))
+#				print("ICMP: unknown type {type}".format(type=hex(type)))
 #		elif protocol == 0x6:
 #			# TCP
 #	
@@ -83,15 +83,15 @@ def icmpidentify(ippacket):
 #			srcport = h<<8 | l
 #			h,l = [ord(x) for x in ippacket[iphdr:][2:4]]
 #			dstport = h<<8 | l
-#			print "TCP ports {src} => {dst}".format(src=srcport,dst=dstport)
+#			print("TCP ports {src} => {dst}".format(src=srcport,dst=dstport))
 #	
 #			# sequence and ACK
 #			h,m,f,l = [ord(x) for x in ippacket[iphdr:][4:8]]
 #			seqno = (h<<24)|(m<<16)|(f<<8)|l
-#			print "TCP seqno {seq}".format(seq=seqno)
+#			print("TCP seqno {seq}".format(seq=seqno))
 #			h,m,f,l = [ord(x) for x in ippacket[iphdr:][8:12]]
 #			ackno = (h<<24)|(m<<16)|(f<<8)|l
-#			print "TCP ackno {ack}".format(ack=ackno)
+#			print("TCP ackno {ack}".format(ack=ackno))
 #	
 #			# flags
 #			h,l = [ord(x) for x in ippacket[iphdr:][12:14]]
@@ -106,7 +106,7 @@ def icmpidentify(ippacket):
 #			rst = bool((flags & 0x0004) >> 2)
 #			syn = bool((flags & 0x0002) >> 1)
 #			fin = bool((flags & 0x0001))
-#			print "TCP flags {flags}".format(flags=hex(flags))
+#			print("TCP flags {flags}".format(flags=hex(flags)))
 #	
 #			if syn:
 #				# Swap source and destination address.
@@ -122,17 +122,17 @@ def icmpidentify(ippacket):
 #				do_write = True
 #	
 #		else:
-#			print "IP: unknown protocol {prot}".format(prot=hex(protocol))
+#			print("IP: unknown protocol {prot}".format(prot=hex(protocol)))
 #	else:
-#		print "Unknown / not an IP packet"
+#		print("Unknown / not an IP packet")
 #
 #	#for x in ippacket:
-#	#	print phex(ord(x)),
+#	#	print(phex(ord(x)))
 #	#print
 #	for x in myhexdump(ippacket):
-#		print x 
+#		print(x )
 #
 #	if do_write:
 #		# Write the reply packet into TUN device.
 #		os.write(tun.fileno(), ''.join(ippacket))
-#	print ""
+#	print("")

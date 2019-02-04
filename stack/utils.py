@@ -15,7 +15,10 @@ def stop_dhclient():
 		dhproc.kill()
 
 def ipversion(ippacket):
-	return (ord(ippacket[0:1][0]) & 0xF0) >> 4
+	tmp=ippacket[0:1][0]
+	if isinstance(tmp,str):
+		tmp=ord(tmp)
+	return (tmp & 0xF0) >> 4
 
 def padded_hex(val, bits=None, bytes=1):
 	if bits is None: bits = bytes * 8
@@ -77,7 +80,7 @@ def hexdump(b, width=16):
 
 
 def get_bytes(buf,startb,endb):
-        return [ ord(x) for x in buf[startb:endb] ]
+        return [ ord(x) if isinstance(x,str) else x for x in buf[startb:endb] ]
 
 def set_bytes(buf,startb,endb,vals):
         if not isinstance(vals,list):
