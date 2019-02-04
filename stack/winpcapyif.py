@@ -7,7 +7,6 @@ from threading import Thread
 
 from . import utils
 
-
 def listwinpcapyifaces():
         return WinPcapDevices.list_devices()
 

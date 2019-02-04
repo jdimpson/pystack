@@ -1,5 +1,5 @@
-from utils import get_bytes,set_bytes,chunker,bytes2word,padded_hex as phex
-import eth
+from .utils import get_bytes,set_bytes,chunker,bytes2word,padded_hex as phex
+from . import eth
 
 VERSION=4
 ICMPTYPE=0x1
@@ -239,9 +239,9 @@ def tcphdrlen(ippacket):
 
 def set_tcphdrlen(ippacket,len):
 	if len > 60:
-		print "WARNING: Length of TCP header can't be greater than 60! Given len %s" % len
+		print("WARNING: Length of TCP header can't be greater than 60! Given len %s" % len)
 	if len % 4 > 0:
-		print "WARNING: Length of TCP header must be multiple of 4! Given len %s" % len
+		print("WARNING: Length of TCP header must be multiple of 4! Given len %s" % len)
 	lwords = len / 4
 	ns = get_bytes(ippacket,PAYLOAD(ippacket)+12,PAYLOAD(ippacket)+13)[0]
 	ns = ns & 0x01
@@ -367,29 +367,29 @@ def dhcpparse(ippacket):
 
 	msgtype = opts["Message Type"]
 
-	print "DHCP message type", msgtype
-	print "DHCP OP   ", op, dhcpop(op)
-	print "DHCP HTYPE", htype
-	print "DHCP HLEN ", hlen
-	print "DHCP HOPS ", hops
-	print "DHCP XID  ", hex(xid)
-	print "DHCP flags", hex(flags)
+	print("DHCP message type", msgtype)
+	print("DHCP OP   ", op, dhcpop(op))
+	print("DHCP HTYPE", htype)
+	print("DHCP HLEN ", hlen)
+	print("DHCP HOPS ", hops)
+	print("DHCP XID  ", hex(xid))
+	print("DHCP flags", hex(flags))
 
-	print "Client IP Address", ciaddr
-	print "Your IP Address  ", yiaddr
-	print "Server IP Address", siaddr
-	print "Relay IP Address ", giaddr
+	print("Client IP Address", ciaddr)
+	print("Your IP Address  ", yiaddr)
+	print("Server IP Address", siaddr)
+	print("Relay IP Address ", giaddr)
 
-	print "Client MAC Address", chaddr
+	print("Client MAC Address", chaddr)
 
-	print "Server Name",sname
+	print("Server Name",sname)
 
-	print "Magic Cookie", cookie
+	print("Magic Cookie", cookie)
 
-	print "DHCP Options"
+	print("DHCP Options")
 	for k in opts:
 		v = opts[k]
-		print "{k}\t{v}".format(k=k,v=v)
+		print("{k}\t{v}".format(k=k,v=v))
 
 def dhcpparseoptions(options):
 	opts = {}
