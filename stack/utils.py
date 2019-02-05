@@ -98,3 +98,7 @@ def bytes2word(bytes):
                 o=o|b
         return o
 
+def ipv4joinaddress(b):
+	return '.'.join([str(x) for x in b])
+def ethjoinaddress(b):
+	return ':'.join([phex(x) for x in b])

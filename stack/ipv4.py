@@ -1,5 +1,5 @@
 from .utils import get_bytes,set_bytes,chunker,bytes2word,padded_hex as phex
-from . import eth
+from . import utils
 
 VERSION=4
 ICMPTYPE=0x1
@@ -33,10 +33,10 @@ def getaddress(ippacket,s,e,asbytes=False):
 	b = get_bytes(ippacket,s,e)
 	if asbytes:
 		return b
-	return joinaddress(b)
+	return utils.ipv4joinaddress(b)
 
-def joinaddress(b):
-	return '.'.join([str(x) for x in b])
+#def joinaddress(b):
+#	return '.'.join([str(x) for x in b])
 
 def ipswapaddresses(ippacket):
 	ippacket[12:16], ippacket[16:20] = ippacket[16:20], ippacket[12:16]
@@ -356,7 +356,7 @@ def dhcpparse(ippacket):
 
 	if hlen > 16: hlen = 16
 	#chaddr  = ':'.join([phex(x) for x in get_bytes(ippacket,UDP(ippacket)+28,UDP(ippacket)+28+hlen)])
-	chaddr  = eth.joinaddress(get_bytes(ippacket,UDP(ippacket)+28,UDP(ippacket)+28+hlen))
+	chaddr  = utils.ethjoinaddress(get_bytes(ippacket,UDP(ippacket)+28,UDP(ippacket)+28+hlen))
 	chpad   = ''.join([phex(x) for x in get_bytes(ippacket,UDP(ippacket)+28+hlen,UDP(ippacket)+44)])
 
 	sname   = ''.join([chr(x) for x in get_bytes(ippacket,UDP(ippacket)+44,UDP(ippacket)+108) if x != 0x0])

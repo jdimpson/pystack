@@ -1,5 +1,5 @@
 from .utils import get_bytes,set_bytes,chunker,padded_hex as phex,bytes2word
-from . import ipv4
+from . import utils
 
 IPV6TYPE = 0x86dd
 IPV4TYPE = 0x0800
@@ -53,10 +53,7 @@ def getaddress(ethframe,s,e,asbytes=False):
 	b = get_bytes(ethframe,s,e)
 	if asbytes:
 		return b
-	return joinaddress(b)
-
-def joinaddress(b):
-	return ':'.join([phex(x) for x in b])
+	return utils.ethjoinaddress(b)
 
 def ethswapaddresses(ethframe):
 	ethframe[0:6], ethframe[6:12] = ethframe[6:12], ethframe[0:6]
@@ -75,17 +72,17 @@ def arpplen(arpbuf):
 def arpoperation(arpbuf):
 	return bytes2word(get_bytes(arpbuf,6,8))
 def arpsendermacaddr(arpbuf):
-	return joinaddress(get_bytes(arpbuf,8,14))
+	return utils.ethjoinaddress(get_bytes(arpbuf,8,14))
 def arpsenderipaddr(arpbuf):
 	if arpptype(arpbuf) == IPV4TYPE:
-		return ipv4.joinaddress(get_bytes(arpbuf,14,18))
+		return utils.ipv4joinaddress(get_bytes(arpbuf,14,18))
 	else:
 		return None
 def arptargetmacaddr(arpbuf):
-	return joinaddress(get_bytes(arpbuf,18,24))
+	return utils.ethjoinaddress(get_bytes(arpbuf,18,24))
 def arptargetipaddr(arpbuf):
 	if arpptype(arpbuf) == IPV4TYPE:
-		return ipv4.joinaddress(get_bytes(arpbuf,24,28))
+		return utils.ipv4joinaddress(get_bytes(arpbuf,24,28))
 	else:
 		return None
 
