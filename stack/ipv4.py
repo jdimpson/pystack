@@ -35,9 +35,6 @@ def getaddress(ippacket,s,e,asbytes=False):
 		return b
 	return utils.ipv4joinaddress(b)
 
-#def joinaddress(b):
-#	return '.'.join([str(x) for x in b])
-
 def ipswapaddresses(ippacket):
 	ippacket[12:16], ippacket[16:20] = ippacket[16:20], ippacket[12:16]
 
@@ -57,7 +54,6 @@ def ipcomputechecksum(ippacket):
 	set_ipchecksum(ippacket,0)
 
 	# covers options, if present, but I'm not sure if it should
-	#for chunk in chunker( [ord(x) for x in ippacket[0:PAYLOAD(ippacket)]] , 2):
 	for chunk in chunker(ippacket[0:PAYLOAD(ippacket)] , 2):
 		w = bytes2word(chunk)
 		sum += w
@@ -114,7 +110,6 @@ def icmpcomputechecksum(ippacket):
 	set_ipchecksum(ippacket,0)
 
 	# covers options, if present, but I'm not sure if it should
-	#for chunk in chunker( [ord(x) for x in ippacket[PAYLOAD(ippacket):PAYLOAD(ippacket)+8]] , 2):
 	for chunk in chunker(ippacket[PAYLOAD(ippacket):PAYLOAD(ippacket)+8], 2):
 		w = bytes2word(chunk)
 		sum += w
@@ -286,7 +281,6 @@ def tcpcomputechecksum(ippacket):
 		sum += w
 
 	# TCP segment(header and data)
-	#for chunk in chunker( [ord(x) for x in ippacket[PAYLOAD(ippacket):]] , 2):
 	for chunk in chunker(ippacket[PAYLOAD(ippacket):], 2):
 		w = bytes2word(chunk)
 		sum += w
