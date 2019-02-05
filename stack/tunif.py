@@ -43,6 +43,4 @@ def writetunippacket(tun,ippacket,dump=False):
 	if dump:
 		for x in utils.hexdump(ippacket):
 			print x
-	return os.write(tun.fileno(), ''.join(ippacket))
-
-
+	return os.write(tun.fileno(), ippacket)

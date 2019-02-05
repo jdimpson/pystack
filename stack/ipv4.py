@@ -114,7 +114,8 @@ def icmpcomputechecksum(ippacket):
 	set_ipchecksum(ippacket,0)
 
 	# covers options, if present, but I'm not sure if it should
-	for chunk in chunker( [ord(x) for x in ippacket[PAYLOAD(ippacket):PAYLOAD(ippacket)+8]] , 2):
+	#for chunk in chunker( [ord(x) for x in ippacket[PAYLOAD(ippacket):PAYLOAD(ippacket)+8]] , 2):
+	for chunk in chunker(ippacket[PAYLOAD(ippacket):PAYLOAD(ippacket)+8], 2):
 		w = bytes2word(chunk)
 		sum += w
 
