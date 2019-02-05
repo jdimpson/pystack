@@ -33,7 +33,7 @@ def readtapethframe(tap,dump=False):
 	if dump:
 		for x in hexdump(l):
 			print x
-	return l
+	return bytearray(l)
 
 def writetapethframe(tap):
 	raise RuntimeError("writetapethframe() not implemented yet")

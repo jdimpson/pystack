@@ -33,7 +33,7 @@ def readrawethframe(sock,dump=False):
 	if dump:
 		for x in hexdump(l):
 			print x
-	return l
+	return bytearray(l)
 
 def writerawethframe(sock):
 	raise RuntimeError("writerawethframe() not implemented yet")

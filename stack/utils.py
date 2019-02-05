@@ -8,6 +8,11 @@ IFF_TUN = 0x0001
 IFF_TAP = 0x0002
 IFF_NO_PI = 0x1000
 
+try:
+    xrange
+except NameError:
+    xrange = range
+
 dhproc = None
 def stop_dhclient():
 	if dhproc:
@@ -85,7 +90,8 @@ def get_bytes(buf,startb,endb):
 def set_bytes(buf,startb,endb,vals):
         if not isinstance(vals,list):
                 vals = [ vals ]
-        buf[startb:endb] = [ chr(x) for x in vals ]
+        buf[startb:endb] = [ x for x in vals ]
+        #buf[startb:endb] = [ chr(x) for x in vals ]
 
 def chunker(seq,size):
         for pos in xrange(0,len(seq),size):

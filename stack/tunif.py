@@ -37,7 +37,7 @@ def readtunippacket(tun,dump=False):
 	if dump:
 		for x in utils.hexdump(l):
 			print x
-	return l
+	return bytearray(l)
 
 def writetunippacket(tun,ippacket,dump=False):
 	if dump:

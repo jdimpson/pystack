@@ -57,7 +57,8 @@ def ipcomputechecksum(ippacket):
 	set_ipchecksum(ippacket,0)
 
 	# covers options, if present, but I'm not sure if it should
-	for chunk in chunker( [ord(x) for x in ippacket[0:PAYLOAD(ippacket)]] , 2):
+	#for chunk in chunker( [ord(x) for x in ippacket[0:PAYLOAD(ippacket)]] , 2):
+	for chunk in chunker(ippacket[0:PAYLOAD(ippacket)] , 2):
 		w = bytes2word(chunk)
 		sum += w
 
@@ -242,7 +243,7 @@ def set_tcphdrlen(ippacket,len):
 		print("WARNING: Length of TCP header can't be greater than 60! Given len %s" % len)
 	if len % 4 > 0:
 		print("WARNING: Length of TCP header must be multiple of 4! Given len %s" % len)
-	lwords = len / 4
+	lwords = int(len / 4)
 	ns = get_bytes(ippacket,PAYLOAD(ippacket)+12,PAYLOAD(ippacket)+13)[0]
 	ns = ns & 0x01
 	lwords = (lwords << 4) | ns
@@ -284,7 +285,8 @@ def tcpcomputechecksum(ippacket):
 		sum += w
 
 	# TCP segment(header and data)
-	for chunk in chunker( [ord(x) for x in ippacket[PAYLOAD(ippacket):]] , 2):
+	#for chunk in chunker( [ord(x) for x in ippacket[PAYLOAD(ippacket):]] , 2):
+	for chunk in chunker(ippacket[PAYLOAD(ippacket):], 2):
 		w = bytes2word(chunk)
 		sum += w
 
