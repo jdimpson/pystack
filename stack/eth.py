@@ -58,6 +58,13 @@ def getaddress(ethframe,s,e,asbytes=False):
 def ethswapaddresses(ethframe):
 	ethframe[0:6], ethframe[6:12] = ethframe[6:12], ethframe[0:6]
 
+def dstfilter(mac,ethframe,asbytes=False):
+    m=ethdstaddress(ethframe,asbytes=asbytes)
+
+    if mac == m:
+        return True
+    return False
+
 ###
 # ARP
 ###

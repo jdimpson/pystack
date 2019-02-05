@@ -1,10 +1,20 @@
 #!/usr/bin/env python
+
+#####
+# WARNING
+# Nothing in this file should be considered part of the API. This is 
+# currently just a bunch of mostly nailed-up packet decoders. The
+# intention is that somehow I'll design modular engines that can
+# implement complex protocol behaviors (e.g. such as TCP) while somehow
+# remaining modular and modifiable so as to be customizable. Right now you
+# get custom behavior by forking this file and modifying it directly.
+#####
+
 import sys,os
 from . import utils
 from . import eth
 from . import ipv6
 from . import ipv4
-
 
 def processEth(ethframe,processIP=None,respondIP=None,processARP=None,respondARP=None):
 	print("\nRECEIVED ETH FRAME")
@@ -57,14 +67,14 @@ def processARP(arpbuf):
 		opera = "request"
 	elif opera == eth.ARPREPLY:
 		opera = "reply"
-	print("htype", htype)
-	print("ptype", ptype)
-	print("hlen",hlen,"plen",plen)
-	print("opera", opera)
-	print("smac",smac)
-	print("sip", sip)
-	print("tmac",tmac)
-	print("tip",tip)
+	print("htype {}".format(htype))
+	print("ptype {}".format(ptype))
+	print("hlen  {} plen {}".format(hlen,plen))
+	print("opera {}".format(opera))
+	print("smac  {}".format(smac))
+	print("sip   {}".format(sip))
+	print("tmac  {}".format(tmac))
+	print("tip   {}".format(tip))
 	
 
 def processIP(ippacket,myttl=8):
@@ -91,7 +101,7 @@ def processIP(ippacket,myttl=8):
 		srcaddr,dstaddr = ipv4.addresses(ippacket)
 		print("{s} => {d}".format(s=srcaddr,d=dstaddr))
 		ttl = ipv4.ipttl(ippacket)
-		print("IP TTL ",ttl)
+		print("IP TTL {}".format(ttl))
 	
 		if protocol == ipv4.ICMPTYPE:
 			type,code,name = ipv4.icmpidentify(ippacket)

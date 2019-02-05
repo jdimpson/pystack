@@ -38,7 +38,6 @@ def readwinpcapyethpacket(winp, dump=False, cnt=False):
     p=bytearray(o[1])
     if dump:
         for x in utils.hexdump(p):
-            print(c)
             print(x)
     if cnt:
         return (c,p)

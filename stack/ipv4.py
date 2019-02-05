@@ -6,6 +6,9 @@ ICMPTYPE=0x1
 TCPTYPE=0x6
 UDPTYPE=0x11
 ICMPECHOREQUEST=0x8
+ICMPECHOREPLY=0x0
+ICMPDESTUNREACH=0x3
+ICMPTIMEEXCEEDED=0xb
 
 ###
 # IP Header
@@ -92,6 +95,53 @@ def icmpidentify(ippacket):
 
 	if type == ICMPECHOREQUEST and code == 0:
 		name = "Echo Request"
+	elif type == ICMPECHOREPLY and code == 0:
+		name = "Echo Reply"
+	elif type == ICMPDESTUNREACH:
+		name = "Destination Unreachable"
+		if code == 0:
+			 name += ": Network Unreachable"
+		elif code == 1:
+			 name += ": Host Unreachable"
+		elif code == 2:
+			 name += ": Protocol Unreachable"
+		elif code == 3:
+			 name += ": Port Unreachable"
+		elif code == 4:
+			 name += ": Fragmentation Required but DF set"
+		elif code == 5:
+			 name += ": Source Route Failed (what were you thinking?)"
+		elif code == 6:
+			 name += ": Network Unknown"
+		elif code == 7:
+			 name += ": Host Unknown"
+		elif code == 8:
+			 name += ": Source Host Isolated(?)"
+		elif code == 9:
+			 name += ": Network Administratively Prohibited (firewalled!)"
+		elif code == 10:
+			 name += ": Host Administratively Prohibited (firewalled!)"
+		elif code == 11:
+			 name += ": Network Unreachable for packet's ToS value"
+		elif code == 12:
+			 name += ": Host Unreachable for packet's ToS value"
+		elif code == 13:
+			 name += ": Communicated Administratively Prohibited(?)"
+		elif code == 14:
+			 name += ": Host Precedence Violation (ToS value)"
+		elif code == 15:
+			 name += ": Precedence Cutoff in Effect (ToS value)"
+		else: 
+			name += ": unknown code {}".format(code)
+	elif type == ICMPTIMEEXCEEDED:
+		name = "Time Exceeded"
+		if code == 0:
+			name += ": TTL Expired in Transit"
+		elif code == 1:
+			name += ": Fragment Reassembly Time Exceeded"
+		else:
+			name += ": unknown code {}".format(code)
+
 	return type,code,name	
 
 def icmpchecksum(ippacket):

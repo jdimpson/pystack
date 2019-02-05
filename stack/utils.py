@@ -82,8 +82,11 @@ def hexdump(b, width=16):
 			pad2 = 0
 	yield phex(l,bytes=4) + "  " + hexlify(chunk1,pad=pad1) + " " + hexlify(chunk2,pad=pad2) + "  |" + safeascii(b) + "|"
 
-
-
+# XXX: Everything based on get_bytes() is dumb, since the packet
+# buffers are all bytearrays, yet these bad boys work on and/or 
+# produce lists of integers...
+# IN MY DEFENSE the original impetus was to make the implementation 
+# of TCP and IP checksums easier for me to understand
 def get_bytes(buf,startb,endb):
         return [ ord(x) if isinstance(x,str) else x for x in buf[startb:endb] ]
 
