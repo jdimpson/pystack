@@ -85,7 +85,7 @@ def processIP(ippacket,myttl=8):
 
 	if ipver == ipv6.VERSION:
 		print("IPv6 packet")
-		for x in utils.hexdump(ippacket): print x
+		for x in utils.hexdump(ippacket): print(x)
 		print(repr(ippacket[0:1]))
 		length  = ipv6.length(ippacket)
 		nexthdr = ipv6.nexthdr(ippacket)
@@ -95,10 +95,10 @@ def processIP(ippacket,myttl=8):
 			body = ipv6.icmpbody(ippacket)
 			print("ICMPv6 {n} type {t} code {c}".format(n=name,t=type,c=code))
 		else:
-			print("IPv6 unknown next header value {nh}".format(nh=hex(nexthdr)))
+			print("IPv6 unhandled next header value {nh}".format(nh=hex(nexthdr)))
 	elif ipver == ipv4.VERSION:
 		print("IPv4 packet")
-		#for x in utils.hexdump(ippacket): print x
+		#for x in utils.hexdump(ippacket): print(x)
 		protocol = ipv4.protocol(ippacket)
 		srcaddr,dstaddr = ipv4.addresses(ippacket)
 		print("{s} => {d}".format(s=srcaddr,d=dstaddr))

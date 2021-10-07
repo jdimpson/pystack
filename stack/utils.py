@@ -57,8 +57,7 @@ def safeascii(s):
 	return o
 
 def hexdump(b, width=16):
-	if isinstance(b,list):
-		b = ''.join(b)
+	print(type(b))
 	l=0
 	hw = int(width / 2)
 	while len(b) > width:

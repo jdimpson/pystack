@@ -6,14 +6,14 @@ import subprocess
 import atexit
 import socket
 
-import utils
-from utils import IFF_TAP, IFF_NO_PI, TUNSETIFF, TUNSETOWNER
+from . import utils
+from .utils import IFF_TAP, IFF_NO_PI, TUNSETIFF, TUNSETOWNER
 
 def bringuptap(hostip,guestip,name="tap0"):
 
 	# Open file corresponding to the TAP device.
-	tun = open('/dev/net/tun', 'r+b')
-	ifr = struct.pack('16sH', name, IFF_TAP | IFF_NO_PI)
+	tun = open('/dev/net/tun', 'r+b', buffering=0)
+	ifr = struct.pack('16sH', name.encode('utf-8'), IFF_TAP | IFF_NO_PI)
 	fcntl.ioctl(tun, TUNSETIFF, ifr)
 	fcntl.ioctl(tun, TUNSETOWNER, 1000)
 
@@ -30,10 +30,11 @@ def bringuptap(hostip,guestip,name="tap0"):
 
 def readtapethframe(tap,dump=False):
 	l = list(os.read(tap.fileno(), 2048))
+	l = bytearray(l)
 	if dump:
 		for x in hexdump(l):
-			print x
-	return bytearray(l)
+			print(x)
+	return l
 
 def writetapethframe(tap):
 	raise RuntimeError("writetapethframe() not implemented yet")

@@ -3,7 +3,7 @@ import sys,os
 import stack.process
 import stack.tapif
 
-sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+#sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
 if "dhcp" in sys.argv[0]:
 	tap = stack.tapif.bringuptap('DHCP','192.168.7.2', name='tap0')
