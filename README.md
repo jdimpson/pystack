@@ -1,7 +1,7 @@
 # pystack
 ## Pure Python Usermode IP Stack
 
-Mostly intended as a learning exercise, but secretly also hoping to become a useful utility for unusual network tasks, such as supporting network simulations or clever utilities. But for now doesn't really do anything but answer pings.
+Mostly intended as a learning exercise, but secretly also hoping to become a useful utility for unusual network tasks, such as supporting network simulations or clearing TIME_WAIT entries. But for now doesn't really do anything but answer pings.
 
 ## ALERT
 Currently written in Python 2. Conversion to Python 3 is in progress, but since most of this code deals with bytes, strings, and integers, it's basically a rewrite.
