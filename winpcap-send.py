@@ -25,5 +25,6 @@ stack.winpcapyif.writewinpcapyethpacket(winp, codecs.decode(packet,'hex'),dump=T
 
 while True:
         p = stack.winpcapyif.readwinpcapyethpacket(winp,dump=True)
-        stack.process.processEth(p,processIP=stack.process.processIP,processARP=stack.process.processARP)
+        info, out = stack.process.processEth(p,processIP=stack.process.processIP,processARP=stack.process.processARP)
+        print('\n'.join(info))
         print("==============")

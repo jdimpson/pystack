@@ -14,7 +14,8 @@ while True:
         if not stack.eth.dstfilter(mymac,p,asbytes=True):
             continue
         stack.utils.hexdump(p)
-        stack.process.processEth(p,processIP=stack.process.processIP,processARP=stack.process.processARP)
+        info, out = stack.process.processEth(p,processIP=stack.process.processIP,processARP=stack.process.processARP)
+        print('\n'.join(info))
         print("==============")
 
 exit()
