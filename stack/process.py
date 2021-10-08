@@ -26,8 +26,14 @@ def processEth(ethframe,processIP=None,respondIP=None,processARP=None,respondARP
 	info.append("MAC addresses {src} => {dst}".format(src=srcmac,dst=dstmac))
 	ethertype = eth.ethertype(ethframe)
 	o=None
-	if ethertype < 1536:
-		info.append("Non-Ethernet II frame")
+	if ethertype < eth.ETHIIMIN: 
+		info.append("LLC (Non-Ethernet II) frame")
+		llcframe = ethframe[eth.PAYLOAD(ethframe):]
+		llclength = ethertype
+		llcframe = llcframe[:llclength]
+		i,o = processLLC(llcframe)
+		for j in i: info.append(j)
+		for j in o: out.append(o)
 	elif ethertype == eth.IPV6TYPE:
 		info.append("IPv6 packet")
 		ippacket = ethframe[eth.PAYLOAD(ethframe):]
@@ -60,6 +66,33 @@ def processEth(ethframe,processIP=None,respondIP=None,processARP=None,respondARP
 		info.append("Unknown ethertype {ty}".format(ty=hex(ethertype)))
 
 	return info,out
+
+def processLLC(llcframe):
+	info = []
+	info.append("RECEIVED LLC FRAME")
+	out = []
+	#for x in utils.hexdump(llcframe): info.append(x)
+	dsap = eth.dsap(llcframe)
+	ssap = eth.ssap(llcframe)
+	cf   = eth.controlfield(llcframe)
+	oc   = eth.orgcode(llcframe)
+	pid  = eth.pid(llcframe)
+
+	oc = eth.fmtorgcode(oc)
+	if pid == eth.PID_CDP:
+		pid = "Cisco Discovery Protocol"
+
+	info.append("dsap {}".format(dsap))
+	info.append("ssap {}".format(ssap))
+	info.append("cf   {}".format(cf))
+	info.append("oc   {}".format(oc))
+	info.append("pid  {}".format(pid))
+
+	pay = llcframe[eth.LLCPAYLOAD():]
+	info.append("LLC PAYLOAD")
+	for x in utils.hexdump(pay): info.append(x)
+
+	return info, out
 
 def processARP(arpbuf):
 	info = []

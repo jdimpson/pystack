@@ -1,6 +1,7 @@
 from .utils import get_bytes,set_bytes,chunker,padded_hex as phex,bytes2word
 from . import utils
 
+ETHIIMIN = 1536
 IPV6TYPE = 0x86dd
 IPV4TYPE = 0x0800
 VLANTYPE = 0x8100
@@ -22,10 +23,9 @@ ARPREPLY     = 2
 ###
 def PAYLOAD(ethframe):
 	et = ethertype(ethframe)
-	if et < 1536:
+	if et < ETHIIMIN:
 		# not an Ethernet II frame
-		print("Non-Ethernet II frames not yet handled.")
-		return None
+		return 14
 	if et == VLANTYPE:
 		return 16
 	if et == VLANDBLTYPE:
@@ -92,4 +92,18 @@ def arptargetipaddr(arpbuf):
 		return utils.ipv4joinaddress(get_bytes(arpbuf,24,28))
 	else:
 		return None
+
+
+###
+# LLC
+###
+PID_CDP = 0x2000
+
+def dsap(llcbuf): return get_bytes(llcbuf,0,1)[0]
+def ssap(llcbuf): return get_bytes(llcbuf,1,2)[0]
+def controlfield(llcbuf): return get_bytes(llcbuf,2,3)[0]
+def orgcode(llcbuf): return get_bytes(llcbuf, 3,6)
+def pid(llcbuf):  return bytes2word(get_bytes(llcbuf,6,8))
+def fmtorgcode(oc): return ':'.join([phex(x) for x in oc])
+def LLCPAYLOAD(): return 8
 
