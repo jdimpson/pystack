@@ -8,8 +8,12 @@ tun = stack.tunif.bringuptun('192.168.7.1','192.168.7.2', name='tun0', persist=F
 while True:
 	# Read an IP packet been sent to this TUN device.
 	ippacket = stack.tunif.readtunippacket(tun, dump=True)
-	o = stack.process.processIP(ippacket)
-	if o is not None:
-		#for x in stack.utils.hexdump(o): print(x)
-		stack.tunif.writetunippacket(tun,o,dump=True)
-		print("===============")
+	i,o = stack.process.processIP(ippacket)
+	for l in i:
+		print(l)
+	print("")
+	for p in o:
+		#for x in stack.utils.hexdump(p): print(x)
+		print("RESPONSE\n===============")
+		stack.tunif.writetunippacket(tun,p,dump=True)
+		print("")

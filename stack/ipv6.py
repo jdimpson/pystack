@@ -1,21 +1,23 @@
 from .utils import get_bytes
 
+# https://en.m.wikipedia.org/wiki/IPv6_packet
+# https://en.m.wikipedia.org/wiki/ICMPv6
 VERSION=6
+
+UDPTYPE=0x11
 ICMPTYPE=0x3a
 PAYLOAD=40 # TODO: figure out how extension headers are supposed to work
 
 def length(ippacket):
 	return (get_bytes(ippacket,4,5)[0]  << 8)| (get_bytes(ippacket,5,6)[0])
-	#return ( ord(ippacket[4:5][0])  << 8 )| ord( ippacket[5:6][0] )
 
 def nexthdr(ippacket):
-	return get_bytes(ippacket,4,5)[0]
-	#return ord( ippacket[6:7][0])
+	return get_bytes(ippacket,6,7)[0]
 
 def icmptype(ippacket):
-	return ord(  ippacket[PAYLOAD:][0:1][0] )
+	return get_bytes(ippacket[PAYLOAD:],0,1)[0] 
 def icmpcode(ippacket):
-	return ord(  ippacket[PAYLOAD:][1:2][0] )
+	return get_bytes(ippacket[PAYLOAD:],1,2)[0]
 
 def icmpbody(ippacket):
 	return ippacket[PAYLOAD:][32:]

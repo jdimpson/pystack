@@ -13,4 +13,9 @@ else:
 while True:
 	# Read an Ethernet frame been sent to this TAP device.
 	ethframe = stack.tapif.readtapethframe(tap,dump=False)
-	stack.process.processEth(ethframe,processIP=stack.process.processIP,processARP=stack.process.processARP)
+	i,o = stack.process.processEth(ethframe,processIP=stack.process.processIP,processARP=stack.process.processARP)
+	for l in i:
+		print(l)
+	print("")
+	if len(o) > 0:
+		print("Can't send responding packets, yet")
