@@ -1,10 +1,7 @@
 # pystack
-## Pure Python Usermode IP Stack
+## Pure Python 3 Usermode IP Stack
 
-Mostly intended as a learning exercise, but secretly also hoping to become a useful utility for unusual network tasks, such as supporting network simulations or clearing TIME_WAIT entries (like https://github.com/rghose/kill-close-wait-connections/blob/master/kill_close_wait_connections.pl). But for now doesn't really do anything but answer pings.
-
-## ALERT
-Currently written in Python 2. Conversion to Python 3 is in progress, but since most of this code deals with bytes, strings, and integers, it's basically a rewrite.
+Mostly intended as a learning exercise, but secretly also hoping to become a useful utility for unusual network tasks, such as supporting network simulations, clearing TIME_WAIT entries (like https://github.com/rghose/kill-close-wait-connections/blob/master/kill_close_wait_connections.pl), or an inline deep packet inspector/man-in-the-middler. But for now doesn't really do anything but answer pings. Sometimes.
 
 ## Getting Started
 

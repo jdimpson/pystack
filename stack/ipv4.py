@@ -157,10 +157,11 @@ def icmpcomputechecksum(ippacket):
 	sum = 0
 
 	# Requires checksum field is set to 0x00
-	set_ipchecksum(ippacket,0)
+	set_icmpchecksum(ippacket,0)
 
-	# covers options, if present, but I'm not sure if it should
-	for chunk in chunker(ippacket[PAYLOAD(ippacket):PAYLOAD(ippacket)+8], 2):
+	# from start of icmp header until end of IPv4 payload
+	# XXX: this breaks if ippacket has an ethernet footer... does it?
+	for chunk in chunker(ippacket[PAYLOAD(ippacket):], 2):
 		w = bytes2word(chunk)
 		sum += w
 
@@ -182,7 +183,7 @@ def icmpechoresponse(ippacket):
 	ipswapaddresses(ippacket)
 	
 	# Change ICMP type code to Echo Reply (0).
-	ippacket[20] = chr(0)
+	ippacket[20] = 0
 
 	sum = icmpcomputechecksum(ippacket)
 

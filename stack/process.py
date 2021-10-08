@@ -85,8 +85,7 @@ def processIP(ippacket,myttl=8):
 
 	if ipver == ipv6.VERSION:
 		print("IPv6 packet")
-		for x in utils.hexdump(ippacket): print(x)
-		print(repr(ippacket[0:1]))
+		#for x in utils.hexdump(ippacket): print(x)
 		length  = ipv6.length(ippacket)
 		nexthdr = ipv6.nexthdr(ippacket)
 		if nexthdr == ipv6.ICMPTYPE:
