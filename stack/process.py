@@ -148,12 +148,11 @@ def processIP(ippacket,myttl=8):
 			info.append("IPv6 unhandled next header value {nh}".format(nh=hex(nexthdr)))
 	elif ipver == ipv4.VERSION:
 		info.append("IPv4 packet")
-		#for x in utils.hexdump(ippacket): print(x)
+		protocol = ipv4.protocol(ippacket)
 		srcaddr,dstaddr = ipv4.addresses(ippacket)
 		info.append("{s} => {d}".format(s=srcaddr,d=dstaddr))
 		ttl = ipv4.ipttl(ippacket)
 		info.append("IP TTL {}".format(ttl))
-	
 		if protocol == ipv4.ICMPTYPE:
 			type,code,name = ipv4.icmpidentify(ippacket)
 			info.append("ICMPv4 {n} type {t} code {c}".format(n=name,t=type,c=code))
