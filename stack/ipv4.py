@@ -475,6 +475,11 @@ def dhcpparseoptions(options):
 		elif t == 145:
 			t = "Forcerenew Nonce Capable"
 			args = True
+		elif t == 50:
+			t = "Specific Address Requested"
+			args = "{}.{}.{}.{}".format(*args)
+		else:
+			t = "DHCP option {}".format(t)
 
 		opts[t] = args
 		options = options[2+l:]
