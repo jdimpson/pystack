@@ -217,7 +217,7 @@ def processIP(ippacket,myttl=8):
 				dhcp = ipv4.dhcpparse(ippacket)
 				info.append("DHCP message type {}".format(dhcp['msgtype']))
 				info.append("DHCP OP    {}".format(dhcp['op']))
-				info.append("DHCP HTYPE {}".format(dhcp['htype')])
+				info.append("DHCP HTYPE {}".format(dhcp['htype']))
 				info.append("DHCP HLEN  {}".format(dhcp['hlen']))
 				info.append("DHCP HOPS  {}".format(dhcp['hops']))
 				info.append("DHCP XID   {}".format(hex(dhcp['xid'])))
