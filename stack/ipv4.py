@@ -434,29 +434,6 @@ def dhcpparse(ippacket):
 		'options': opts,
 
 	}
-	print("DHCP message type", msgtype)
-	print("DHCP OP   ", op, dhcpop(op))
-	print("DHCP HTYPE", htype)
-	print("DHCP HLEN ", hlen)
-	print("DHCP HOPS ", hops)
-	print("DHCP XID  ", hex(xid))
-	print("DHCP flags", hex(flags))
-
-	print("Client IP Address", ciaddr)
-	print("Your IP Address  ", yiaddr)
-	print("Server IP Address", siaddr)
-	print("Relay IP Address ", giaddr)
-
-	print("Client MAC Address", chaddr)
-
-	print("Server Name",sname)
-
-	print("Magic Cookie", cookie)
-
-	print("DHCP Options")
-	for k in opts:
-		v = opts[k]
-		print("{k}\t{v}".format(k=k,v=v))
 
 def dhcpparseoptions(options):
 	opts = {}
