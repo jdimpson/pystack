@@ -2,6 +2,9 @@
 import fcntl
 import atexit
 import socket
+import sys,os
+
+from .utils import hexdump
 
 # see https://man7.org/linux/man-pages/man7/netdevice.7.html
 #ioctl(5, SIOCGIFFLAGS, {ifr_name="eth0", ifr_flags=IFF_UP|IFF_BROADCAST|IFF_RUNNING|IFF_MULTICAST}) = 0
@@ -45,3 +48,4 @@ def readrawethframe(sock,dump=False):
 
 def writerawethframe(sock, macaddr=None, vlan=None):
 	raise RuntimeError("writerawethframe() not implemented yet")
+

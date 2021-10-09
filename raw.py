@@ -4,8 +4,12 @@ import stack.rawif
 import stack.process
 
 #sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+iface = "eth0"
 
-raw = stack.rawif.bringupraw(promisc=True)
+if len(sys.argv) > 1:
+	iface = sys.argv[1]
+
+raw = stack.rawif.bringupraw(iface=iface,promisc=True)
 
 while True:
 	# Read an Ethernet frame been sent to this device.
