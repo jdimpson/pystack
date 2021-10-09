@@ -232,7 +232,7 @@ def processIP(ippacket,myttl=8):
 
 				info.append("DHCP Options")
 				for k in dhcp['options']:
-					v = dhcp['opts'][k]
+					v = dhcp['options'][k]
 					info.append("{k}\t{v}".format(k=k,v=v))
 
 		else:
