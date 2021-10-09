@@ -231,7 +231,7 @@ def processIP(ippacket,myttl=8):
 				info.append("Magic Cookie {}".format(dhcp['cookie']))
 
 				info.append("DHCP Options")
-				for k in dhcp['opts']:
+				for k in dhcp['options']:
 					v = dhcp['opts'][k]
 					info.append("{k}\t{v}".format(k=k,v=v))
 

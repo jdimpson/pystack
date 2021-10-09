@@ -432,7 +432,6 @@ def dhcpparse(ippacket):
 		'sname':   sname,
 		'cookie':  cookie,
 		'options': opts,
-
 	}
 
 def dhcpparseoptions(options):
