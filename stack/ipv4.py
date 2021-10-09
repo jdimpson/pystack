@@ -415,6 +415,25 @@ def dhcpparse(ippacket):
 
 	msgtype = opts["Message Type"]
 
+	return {
+
+		'msgtype': msgtype,
+		'op':      op,
+		'htype':   htype,
+		'hlen':    hlen,
+		'hops':    hops,
+		'xid':     xid,
+		'flags':   flags,
+		'ciaddr':  ciaddr,
+		'yiaddr':  yiaddr,
+		'siadder': siaddr,
+		'giaddr':  giaddr,
+		'chaddr':  chaddr,
+		'sname':   sname,
+		'cookie':  cookie,
+		'options': opts,
+
+	}
 	print("DHCP message type", msgtype)
 	print("DHCP OP   ", op, dhcpop(op))
 	print("DHCP HTYPE", htype)

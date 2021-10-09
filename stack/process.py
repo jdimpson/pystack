@@ -149,7 +149,6 @@ def processIP(ippacket,myttl=8):
 	elif ipver == ipv4.VERSION:
 		info.append("IPv4 packet")
 		#for x in utils.hexdump(ippacket): print(x)
-		protocol = ipv4.protocol(ippacket)
 		srcaddr,dstaddr = ipv4.addresses(ippacket)
 		info.append("{s} => {d}".format(s=srcaddr,d=dstaddr))
 		ttl = ipv4.ipttl(ippacket)
@@ -216,7 +215,27 @@ def processIP(ippacket,myttl=8):
 
 			if dstport == 67 and srcport == 68:
 				info.append("DHCP client")
-				ipv4.dhcpparse(ippacket)
+				dhcp = ipv4.dhcpparse(ippacket)
+				info.append("DHCP message type", dhcp['msgtype'])
+				info.append("DHCP OP   ", dhcp['op, dhcpop(op']))
+				info.append("DHCP HTYPE", dhcp['htype'])
+				info.append("DHCP HLEN ", dhcp['hlen'])
+				info.append("DHCP HOPS ", dhcp['hops'])
+				info.append("DHCP XID  ", dhcp['hex(xid']))
+				info.append("DHCP flags", dhcp['hex(flags']))
+				info.append("Client IP Address", dhcp['ciaddr'])
+				info.append("Your IP Address  ", dhcp['yiaddr'])
+				info.append("Server IP Address", dhcp['siaddr'])
+				info.append("Relay IP Address ", dhcp['giaddr'])
+				info.append("Client MAC Address", dhcp['chaddr'])
+				info.append("Server Name",dhcp['sname'])
+				info.append("Magic Cookie", dhcp['cookie'])
+
+				info.append("DHCP Options")
+				for k in dhcp['opts']:
+					v = dhcp['opts'][k]
+					info.append("{k}\t{v}".format(k=k,v=v))
+
 		else:
 			info.append("IPv4 unknown protocol {prot}".format(prot=hex(protocol)))
 	else:
