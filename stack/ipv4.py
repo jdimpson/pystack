@@ -1,4 +1,4 @@
-from .utils import get_bytes,set_bytes,chunker,bytes2word,padded_hex as phex
+rom .utils import get_bytes,set_bytes,chunker,bytes2word,padded_hex as phex
 from . import utils
 
 VERSION=4
@@ -426,7 +426,7 @@ def dhcpparse(ippacket):
 		'flags':   flags,
 		'ciaddr':  ciaddr,
 		'yiaddr':  yiaddr,
-		'siadder': siaddr,
+		'siaddr':  siaddr,
 		'giaddr':  giaddr,
 		'chaddr':  chaddr,
 		'sname':   sname,
