@@ -46,6 +46,7 @@ def readrawethframe(sock,dump=False):
 			print(x)
 	return bytearray(l)
 
-def writerawethframe(sock, macaddr=None, vlan=None):
+def writerawethframe(sock):
 	raise RuntimeError("writerawethframe() not implemented yet")
 
+	return os.write(tun.fileno(), ippacket)

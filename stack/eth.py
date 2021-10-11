@@ -65,6 +65,23 @@ def dstfilter(mac,ethframe,asbytes=False):
         return True
     return False
 
+def makeethIIhdr(dstmac,srcmac,type=IPV4TYPE):
+	b = bytearray()
+	dstmac = setethaddress(dstmac)
+	srcmac = setethaddress(srcmac)
+	print(dstmac, srcmac)
+
+def setethaddress(mac):
+	#if isinstance(dstmac, bytes):
+	if   isinstance(mac, str):
+		mac = mac.replace(':','')
+		mac = bytearray.fromhex(mac)
+	elif isinstance(mac, int):
+		mac = bytearray(mac.to_bytes(6, byteorder='big'))
+
+	return mac
+
+
 ###
 # ARP
 ###
