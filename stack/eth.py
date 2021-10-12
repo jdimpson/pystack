@@ -55,8 +55,12 @@ def getaddress(ethframe,s,e,asbytes=False):
 		return b
 	return utils.ethjoinaddress(b)
 
-def ethswapaddresses(ethframe):
+def swapmacs(ethframe):
 	ethframe[0:6], ethframe[6:12] = ethframe[6:12], ethframe[0:6]
+
+def set_srcmac(ethframe,mac):
+	mac = ethaddress_asints(mac)
+	utils.set_bytes(ethframe,6,12,mac)
 
 def dstfilter(mac,ethframe,asbytes=False):
     m=ethdstaddress(ethframe,asbytes=asbytes)
@@ -67,11 +71,19 @@ def dstfilter(mac,ethframe,asbytes=False):
 
 def makeethIIhdr(dstmac,srcmac,typ=IPV4TYPE):
 	b = bytearray()
-	dstmac = setethaddress(dstmac)
-	srcmac = setethaddress(srcmac)
+	dstmac = ethaddress_asbytes(dstmac)
+	srcmac = ethaddress_asbytes(srcmac)
 	return dstmac + srcmac + bytearray(typ.to_bytes(2,byteorder='big'))
 
-def setethaddress(mac):
+def ethaddress_asints(mac):
+	if   isinstance(mac, str):
+		mac = mac.replace(':','')
+		mac = [int(x,base=16) for x in mac]
+	if len(mac) != 6:
+		raise RuntimeError("six ints required, {} is {}".format(mac,len(mac)))
+	return mac
+
+def ethaddress_asbytes(mac):
 	if   isinstance(mac, str):
 		mac = mac.replace(':','')
 		mac = bytearray.fromhex(mac)
@@ -151,13 +163,15 @@ crc32table = [
      0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D
 ]
 
+# Raw ethernet sockets apparently still perform the CRC calculation, 
+# so this code is unverified.
 def CRC32(data):
 	crc32 = 0xFFFFFFFF
-	
+
 	for i in range(len(data)):
 		lookup = (crc32 ^ data[i]) & 0xff
 		crc32 = (crc32 >> 8) ^ crc32table[lookup]
-	
+
 	# Finalize the CRC-32 value by inverting all the bits
 	crc32 ^= 0xFFFFFFFF
 	return crc32
@@ -175,6 +189,9 @@ def arpplen(arpbuf):
 	return get_bytes(arpbuf,5,6)
 def arpoperation(arpbuf):
 	return bytes2word(get_bytes(arpbuf,6,8))
+def set_arpoperation(arpbuf,opera):
+	op = [(opera & 0xFF00)>>8,(opera & 0x00FF)]
+	set_bytes(arpbuf, 6,8, op)
 def arpsendermacaddr(arpbuf):
 	return utils.ethjoinaddress(get_bytes(arpbuf,8,14))
 def arpsenderipaddr(arpbuf):
@@ -184,6 +201,8 @@ def arpsenderipaddr(arpbuf):
 		return None
 def arptargetmacaddr(arpbuf):
 	return utils.ethjoinaddress(get_bytes(arpbuf,18,24))
+def set_arptargetmacaddr(arpbuf, macaddr):
+	set_bytes(arpbuf, 18,24, macaddr)
 def arptargetipaddr(arpbuf):
 	if arpptype(arpbuf) == IPV4TYPE:
 		return utils.ipv4joinaddress(get_bytes(arpbuf,24,28))

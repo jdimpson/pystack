@@ -1,21 +1,36 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys,os
 import stack.process
 import stack.tapif
 
 #sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-if "dhcp" in sys.argv[0]:
-	tap = stack.tapif.bringuptap('DHCP','192.168.7.2', name='tap0')
-else:
-	tap = stack.tapif.bringuptap('192.168.7.1','192.168.7.2', name='tap0')
+hostip  = '192.168.7.1'
+guestip = '192.168.7.2'
 
-while True:
-	# Read an Ethernet frame been sent to this TAP device.
-	ethframe = stack.tapif.readtapethframe(tap,dump=False)
-	i,o = stack.process.processEth(ethframe,processIP=stack.process.processIP,processARP=stack.process.processARP)
-	for l in i:
-		print(l)
-	print("")
-	if len(o) > 0:
-		print("Can't send responding packets, yet")
+#guestmac = 'dc:a6:32:36:c4:01'
+guestmac = 'aa:69:d1:7c:2e:a2'
+
+if "dhcp" in sys.argv[0]:
+	hostip = 'DHCP'
+
+tap = stack.tapif.bringuptap(hostip, guestip, name='tap0')
+pe  = stack.process.packetEngine(myipv4addr=guestip, mymacaddr=guestmac)
+
+try:
+	while True:
+		# Read an Ethernet frame been sent to this TAP device.
+		ethframe = stack.tapif.readtapethframe(tap,dump=False)
+		try:
+			i, o = pe.processEth(ethframe)
+			for l in i: print(l)
+			print("============")
+			if o is not None:
+				stack.tapif.writetapethframe(tap,o, dump=True)
+				print("############")
+		except stack.process.IgnorePacket as e:
+			pass
+except BrokenPipeError as e:
+	exit(0)
+except KeyboardInterrupt as e:
+	exit(o)

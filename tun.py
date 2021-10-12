@@ -3,17 +3,24 @@ import stack.process
 import stack.tunif
 import stack.utils
 
-tun = stack.tunif.bringuptun('192.168.7.1','192.168.7.2', name='tun0', persist=False)
+hostip  = '192.168.7.1'
+guestip = '192.168.7.2'
+tun = stack.tunif.bringuptun(hostip, guestip, name='tun0', persist=False)
+pe = stack.process.packetEngine(myipv4addr = guestip)
 
 while True:
 	# Read an IP packet been sent to this TUN device.
 	ippacket = stack.tunif.readtunippacket(tun, dump=True)
-	i,o = stack.process.processIP(ippacket)
-	for l in i:
-		print(l)
-	print("")
-	for p in o:
-		#for x in stack.utils.hexdump(p): print(x)
-		print("RESPONSE\n===============")
-		stack.tunif.writetunippacket(tun,p,dump=True)
+	try:
+		i,o = pe.processIP(ippacket)
+		for l in i: print(l)
 		print("")
+		if o is not None:
+			#for x in stack.utils.hexdump(o): print(x)
+			print("RESPONSE\n===============")
+			stack.tunif.writetunippacket(tun,o,dump=True)
+			print("")
+	except stack.process.IgnorePacket as e:
+		pass
+	except BrokenPipeError as e:
+		exit(0)

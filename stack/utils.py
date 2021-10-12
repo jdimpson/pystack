@@ -85,6 +85,7 @@ def hexdump(b, width=16):
 # produce lists of integers...
 # IN MY DEFENSE the original impetus was to make the implementation 
 # of TCP and IP checksums easier for me to understand
+# also python3 bytes have no bitwise operators so uhmmm what?
 def get_bytes(buf,startb,endb):
         return [ ord(x) if isinstance(x,str) else x for x in buf[startb:endb] ]
 
@@ -108,3 +109,39 @@ def ipv4joinaddress(b):
 	return '.'.join([str(x) for x in b])
 def ethjoinaddress(b):
 	return ':'.join([phex(x) for x in b])
+
+def ipv4splitaddress(s):
+	return [ int(x) for x in s.split('.') ]
+
+def ethsplitaddress(s):
+	return [ int(x,base=16) for x in s.split(':') ]
+
+def ints2bytes(i):
+	o = []
+	for x in i:
+		b = x.to_bytes(length=1, byteorder='big')
+		o.append(b)
+	return o
+
+def bytes2ints(b):
+	o = []
+	for x in b:
+		i = int.from_bytes(x, byteorder='big', signed=False)
+		o.append(i)
+	return o
+
+###
+# Multicast
+###
+
+
+def mcastIPv4toMac(ipaddr,asbytes=False):
+	ip = ipv4splitaddress(ipaddr)
+	if ip[0]& 0b11110000 != 0b11100000:
+		raise RuntimeError("IP Address {} is not a valid multicast address".format(ipaddr))
+	mac = [1, 0, 83, ip[1] & 0b01111111, ip[2], ip[3]]
+	if asbytes:
+		return ints2bytes(mac)
+	else:
+		return ethjoinaddress(mac)
+

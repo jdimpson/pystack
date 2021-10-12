@@ -15,9 +15,13 @@ srcmac = 'aa:bb:cc:dd:ee:ff'
 ethhdr = stack.eth.makeethIIhdr(dstmac,srcmac,typ=0x9000)
 nullbody = bytearray([ 0 for x in range(46) ])
 frame = ethhdr + nullbody
-crc = stack.eth.CRC32(frame)
-frame = frame + crc.to_bytes(4, byteorder='big')
-#print(frame,len(frame))
+
+# raw ethernet sockets apparently still compute the CRC so this isn't needed.
+#crc = stack.eth.CRC32(frame)
+#frame = frame + crc.to_bytes(4, byteorder='big')
+
 for x in stack.utils.hexdump(frame):
 	print(x)
 stack.rawif.writerawethframe(raw,frame)
+
+exit(0)

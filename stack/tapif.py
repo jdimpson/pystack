@@ -32,9 +32,12 @@ def readtapethframe(tap,dump=False):
 	l = list(os.read(tap.fileno(), 2048))
 	l = bytearray(l)
 	if dump:
-		for x in hexdump(l):
+		for x in utils.hexdump(l):
 			print(x)
 	return l
 
-def writetapethframe(tap):
-	raise RuntimeError("writetapethframe() not implemented yet")
+def writetapethframe(tap,frame, dump=False):
+	if dump:
+		for x in utils.hexdump(frame):
+			print(x)
+	return os.write(tap.fileno(), frame)

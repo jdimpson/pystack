@@ -190,21 +190,6 @@ def icmpechoresponse(ippacket):
 	set_icmpchecksum(ippacket,sum)
 	return
 
-	# Clear original ICMP Checksum field.
-	ippacket[22:24] = chr(0), chr(0)
-
-	# Calculate new checksum.
-	checksum = 0
-	# for every 16-bit of the ICMP payload:
-	for i in range(20, len(ippacket), 2):
-		half_word = (ord(ippacket[i]) << 8) + ord(ippacket[i+1])
-		checksum += half_word
-	# Get one's complement of the checksum.
-	checksum = ~(checksum + 4) & 0xffff
-	# Put the new checksum back into the packet.
-	ippacket[22] = chr(checksum >> 8)
-	ippacket[23] = chr(checksum & ((1 << 8) -1))
-
 ###
 # UDP
 ###
@@ -512,3 +497,5 @@ def dhcpop(op):
 		return "BOOTREPLY"
 	else:
 		return "UNKNOWN BOOT OP"
+
+

@@ -11,11 +11,18 @@ if len(sys.argv) > 1:
 
 raw = stack.rawif.bringupraw(iface=iface,promisc=True)
 
+pe = stack.process.packetEngine()
 while True:
 	# Read an Ethernet frame that's been sent to this device.
 	ethframe = stack.rawif.readrawethframe(raw)
-	info,out = stack.process.processEth(ethframe,processIP=stack.process.processIP,processARP=stack.process.processARP)
-	print('\n'.join(info))
-	print("============")
-	for o in out:
-		stack.rawif.writerawethframe(raw,o)
+	try:
+		info,out = pe.processEth(ethframe)
+		for i in info: print(i)
+		print("============")
+		if out:
+			stack.rawif.writerawethframe(raw,out)
+			print("############")
+	except stack.process.IgnorePacket as e:
+		pass
+	except BrokenPipeError as e:
+		exit(0)
