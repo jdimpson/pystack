@@ -199,6 +199,8 @@ def arpsenderipaddr(arpbuf):
 		return utils.ipv4joinaddress(get_bytes(arpbuf,14,18))
 	else:
 		return None
+def arpswapsendertarget(arpbuf):
+	arpbuf[8:14], arpbuf[14:18], arpbuf[18:24], arpbuf[24:] = arpbuf[18:24], arpbuf[24:], arpbuf[8:14], arpbuf[14:18]
 def arptargetmacaddr(arpbuf):
 	return utils.ethjoinaddress(get_bytes(arpbuf,18,24))
 def set_arptargetmacaddr(arpbuf, macaddr):

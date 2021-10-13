@@ -161,6 +161,7 @@ class packetEngine(packetEngineBase):
 				else:
 					info.append("Making reply")
 					eth.set_arptargetmacaddr(arpbuf,utils.ethsplitaddress(m))
+					eth.arpswapsendertarget(arpbuf)
 					o = arpbuf
 
 		return report("ARP", info), o
