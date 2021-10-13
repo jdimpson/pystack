@@ -25,7 +25,5 @@ There are no explicit dependencies, but I'm sure lots of implicit ones.
 	sleep 1
 	ping 192.168.7.2
 
-(Doesn't currently respond to pings, but otherwise works great!)
-
 ## Windows Support
 requires https://github.com/orweis/winpcapy
