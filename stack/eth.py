@@ -63,11 +63,13 @@ def set_srcmac(ethframe,mac):
 	utils.set_bytes(ethframe,6,12,mac)
 
 def dstfilter(mac,ethframe,asbytes=False):
-    m=ethdstaddress(ethframe,asbytes=asbytes)
+	if isinstance(mac,str):
+		mac = ethaddress_asints(mac)
+	m=ethdstaddress(ethframe,asbytes=asbytes)
 
-    if mac == m:
-        return True
-    return False
+	if mac == m:
+		return True
+	return False
 
 def makeethIIhdr(dstmac,srcmac,typ=IPV4TYPE):
 	b = bytearray()
@@ -77,7 +79,8 @@ def makeethIIhdr(dstmac,srcmac,typ=IPV4TYPE):
 
 def ethaddress_asints(mac):
 	if   isinstance(mac, str):
-		mac = mac.replace(':','')
+		#mac = mac.replace(':','')
+		mac = mac.split(':')
 		mac = [int(x,base=16) for x in mac]
 	if len(mac) != 6:
 		raise RuntimeError("six ints required, {} is {}".format(mac,len(mac)))
