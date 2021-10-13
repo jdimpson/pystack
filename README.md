@@ -25,5 +25,10 @@ There are no explicit dependencies, but I'm sure lots of implicit ones.
 	sleep 1
 	ping 192.168.7.2
 
+### Send an LLC/loop/ECTP frame over a raw interface
+	tcpdump ether proto 0x900 &
+	sleep 5
+	sudo ./sendloopraw.py
+
 ## Windows Support
 requires https://github.com/orweis/winpcapy
