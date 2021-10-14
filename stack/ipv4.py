@@ -224,6 +224,26 @@ def udpcomputechecksum(ippacket):
 
 
 ###
+# SYSLOG
+###
+
+def SYSLOG(ippacket):
+	return UDP(ippacket) + 8
+
+def facility(ippacket):
+	return faclev(ippacket)[0]
+def level(ippacket):
+	return faclev(ippacket)[1]
+def faclev(ippacket):
+	S=SYSLOG(ippacket)
+	fl = get_bytes(ippacket,S+0,S+1)[0]
+	f = (fl & 0b11111000 ) >> 3
+	l = (fl & 0b00000111 )
+	return f,l
+def message(ippacket):
+	return get_bytes(ippacket, SYSLOG(ippacket) + 1, len(ippacket))
+
+###
 # TCP
 ###
 def tcpports(ippacket):

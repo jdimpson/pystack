@@ -46,5 +46,8 @@ def readrawethframe(sock,dump=False):
 			print(x)
 	return bytearray(l)
 
-def writerawethframe(sock,frame):
+def writerawethframe(sock,frame,dump=False):
+	if dump:
+		for x in hexdump(frame):
+			print(x)
 	return os.write(sock.fileno(), frame)

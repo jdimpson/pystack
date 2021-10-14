@@ -304,6 +304,12 @@ class packetEngine(packetEngineBase):
 			for k in dhcp['options']:
 				v = dhcp['options'][k]
 				info.append("{k}\t{v}".format(k=k,v=v))
+		elif dstport == 514:
+			info.append("SYSLOG message")
+			f,l = ipv4.faclev(ippacket)
+			mess = ipv4.message(ippacket)
+			info.append("SYSLOG facility {}, level {}, message {}".format(f,l,mess))
+		# TODO: else: icmp response
 		return report("UDP", info), None
 
 def processIPv6(ippacket,myttl=8):
