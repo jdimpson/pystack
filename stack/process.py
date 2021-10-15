@@ -308,7 +308,7 @@ class packetEngine(packetEngineBase):
 			info.append("SYSLOG message")
 			f,l = ipv4.faclev(ippacket)
 			mess = ipv4.message(ippacket)
-			info.append("SYSLOG facility {}, level {}, message {}".format(f,l,mess))
+			info.append("SYSLOG {}.{} {}".format(f,l,mess))
 		# TODO: else: icmp response
 		return report("UDP", info), None
 
