@@ -227,21 +227,63 @@ def udpcomputechecksum(ippacket):
 # SYSLOG
 ###
 
-def SYSLOG(ippacket):
-	return UDP(ippacket) + 8
+sysl_facility = [
+	"KERN",
+	"USER",
+	"MAIL",
+	"SYSTEM",
+	"AUTH",
+	"SYSLOG",
+	"LPR",
+	"network news",
+	"UUCP",
+	"CRON",
+	"AUTHPRIV",
+	"FTP",
+	"NTP",
+	"log audit",
+	"log alert",
+	"clock daemon",
+	"LOCAL0",
+	"LOCAL1",
+	"LOCAL2",
+	"LOCAL3",
+	"LOCAL4",
+	"LOCAL5",
+	"LOCAL6",
+	"LOCAL7",
+]
+sysl_level = [
+	"EMERG",
+	"ALERT",
+	"CRIT",
+	"ERR",
+	"WARNING",
+	"NOTICE",
+	"INFO",
+	"DEBUG",
+]
 
 def facility(ippacket):
 	return faclev(ippacket)[0]
 def level(ippacket):
 	return faclev(ippacket)[1]
-def faclev(ippacket):
-	S=SYSLOG(ippacket)
-	fl = get_bytes(ippacket,S+0,S+1)[0]
+def faclev(ippacket,asstr=True):
+	S=UDP(ippacket)
+	fl = get_bytes(ippacket,S+0,S+4)
+	# holy shit seriously?
+	fl = int(chr(fl[1])+chr(fl[2]))
 	f = (fl & 0b11111000 ) >> 3
 	l = (fl & 0b00000111 )
+	if asstr:
+		f = sysl_facility[f]
+		l = sysl_level[l]
 	return f,l
 def message(ippacket):
-	return get_bytes(ippacket, SYSLOG(ippacket) + 1, len(ippacket))
+	#return get_bytes(ippacket, UDP(ippacket) + 4, len(ippacket))
+	mess = get_bytes(ippacket, UDP(ippacket) + 4, len(ippacket))
+	mess = ''.join( [ chr(x) for x in mess  ] )
+	return mess
 
 ###
 # TCP
