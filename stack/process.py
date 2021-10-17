@@ -173,9 +173,9 @@ class packetEngine(packetEngineBase):
 		ipver = utils.ipversion(ippacket)
 
 		if   ipver == ipv4.VERSION:
-			return self.processIPv4(ippacket, respond=respond)
+			return self.processIPv4(ippacket)
 		elif ipver == ipv6.VERSION:
-			return self.processIPv6(ippacket, respond=respond)
+			return self.processIPv6(ippacket)
 		else:
 			info.append("Unknown / not an IPv4 packet: {}".format(ipver))
 			return report("IPvX", info), None
@@ -305,7 +305,7 @@ class packetEngine(packetEngineBase):
 				v = dhcp['options'][k]
 				info.append("{k}\t{v}".format(k=k,v=v))
 		elif dstport == 514:
-			info.append("SYSLOG message")
+			#info.append("SYSLOG message")
 			f,l = ipv4.faclev(ippacket)
 			mess = ipv4.message(ippacket)
 			info.append("SYSLOG {}.{} {}".format(f,l,mess))

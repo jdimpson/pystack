@@ -34,6 +34,7 @@ try:
 		# Read an Ethernet frame been sent to this TAP device.
 		ethframe = stack.tapif.readtapethframe(tap,dump=False)
 		try:
+			# tap devices include Ethernet frames
 			i, o = pe.processEth(ethframe)
 			for l in i: print(l)
 			print("============")
