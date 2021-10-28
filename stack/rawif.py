@@ -3,6 +3,7 @@ import fcntl
 import atexit
 import socket
 import sys,os
+import subprocess
 
 from .utils import hexdump
 
@@ -14,6 +15,9 @@ from .utils import hexdump
 #ioctl(5, SIOCGIFTXQLEN, {ifr_name="eth0", ifr_qlen=1000}) = 0
 
 def bringupraw(iface="eth0",promisc=True):
+	if "UP" not in subprocess.check_output("ip link show {}".format(iface),shell=True).decode('utf-8'):
+		subprocess.check_call("ip link set dev {} up".format(iface), shell=True)
+
 	# NOTE: highly Linux specific
 	import ctypes,fcntl
 	class ifreq(ctypes.Structure):
