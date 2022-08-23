@@ -90,7 +90,7 @@ def get_bytes(buf,startb,endb):
         return [ ord(x) if isinstance(x,str) else x for x in buf[startb:endb] ]
 
 def set_bytes(buf,startb,endb,vals):
-        if not isinstance(vals,list):
+        if not isinstance(vals,(list,bytes,bytearray)):
                 vals = [ vals ]
         buf[startb:endb] = [ x for x in vals ]
 
@@ -104,6 +104,9 @@ def bytes2word(bytes):
                 o=o<<8
                 o=o|b
         return o
+
+def word2bytes(word):
+	return [(word & 0xFF00)>>8,(word & 0x00FF)]
 
 def ipv4joinaddress(b):
 	return '.'.join([str(x) for x in b])

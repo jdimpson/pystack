@@ -240,7 +240,8 @@ class packetEngine(packetEngineBase):
 				info.append("ICMPv4 code is {code}, expected 0x0, ignoring descrepency".format(hex(code)))
 
 			if respond:
-				info.append("Responding to ECHO REQUEST with ECHO RESPONSE")
+				srcaddr,dstaddr = ipv4.addresses(ippacket)
+				info.append("Responding to ECHO REQUEST from {} with ECHO RESPONSE from {}".format(srcaddr, dstaddr))
 				ipv4.icmpechoresponse(ippacket)
 				o = ippacket
 		else:

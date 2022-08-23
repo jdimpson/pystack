@@ -77,6 +77,20 @@ def ipttl(ippacket):
 def set_ipttl(ippacket,ttl):
 	set_bytes(ippacket,8,9,[ttl])
 
+def ipv4address_asbytes(ip):
+	if   isinstance(ip, str):
+		#ip = ip.replace('.','')
+		#ip = bytearray.fromhex(ip)
+		ip = bytearray([int(d) for d in ip.split('.')])
+	elif isinstance(ip, int):
+		ip = bytearray(ip.to_bytes(4, byteorder='big'))
+
+	if not isinstance(ip, (bytearray, bytes)):
+		raise RuntimeError("bytes or bytearray required, {} is {}".format(ip,type(ip)))
+	if len(ip) != 4:
+		raise RuntimeError("four bytes required, {} is {}".format(ip,len(ip)))
+	return ip
+
 ###
 # ICMP
 ###

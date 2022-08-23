@@ -1,5 +1,8 @@
-from .utils import get_bytes,set_bytes,chunker,padded_hex as phex,bytes2word
+from .utils import get_bytes,set_bytes,chunker,padded_hex as phex,bytes2word,word2bytes
 from . import utils
+
+# breaks my self-imposed rules, but needed for ARP processing
+from .ipv4 import ipv4address_asbytes
 
 ETHIIMIN = 1536
 IPV6TYPE = 0x86dd
@@ -17,6 +20,8 @@ TTECTRLTYPE  = 0x891D
 VLANDBLTYPE  = 0x9100
 ARPREQUEST   = 1
 ARPREPLY     = 2
+ARPETHTYPE   = 1
+
 
 ###
 # MAC Header
@@ -72,7 +77,6 @@ def dstfilter(mac,ethframe,asbytes=False):
 	return False
 
 def makeethIIhdr(dstmac,srcmac,typ=IPV4TYPE):
-	b = bytearray()
 	dstmac = ethaddress_asbytes(dstmac)
 	srcmac = ethaddress_asbytes(srcmac)
 	return dstmac + srcmac + bytearray(typ.to_bytes(2,byteorder='big'))
@@ -182,6 +186,24 @@ def CRC32(data):
 ###
 # ARP
 ###
+# https://www.rfc-editor.org/rfc/rfc826
+# https://www.rfc-editor.org/rfc/rfc3927
+# https://www.rfc-editor.org/rfc/rfc5227
+def makearpbuf(sha, spa, tha, tpa, oper=ARPREQUEST, htype=ARPETHTYPE, ptype=IPV4TYPE):
+	sha = ethaddress_asbytes(sha)
+	spa = ipv4address_asbytes(spa)
+	tha = ethaddress_asbytes(tha)
+	tpa = ipv4address_asbytes(tpa)
+
+	hlen = len(sha).to_bytes(1, byteorder='big')
+	plen = len(spa).to_bytes(1, byteorder='big')
+
+	htype = bytearray(htype.to_bytes(2, byteorder='big'))
+	ptype = bytearray(ptype.to_bytes(2, byteorder='big'))
+	oper = bytearray(oper.to_bytes(2, byteorder='big'))
+	
+	return htype+ptype+hlen+plen+oper+sha+spa+tha+tpa
+
 def arphtype(arpbuf):
 	return bytes2word(get_bytes(arpbuf,0,2))
 def arpptype(arpbuf):
@@ -193,7 +215,10 @@ def arpplen(arpbuf):
 def arpoperation(arpbuf):
 	return bytes2word(get_bytes(arpbuf,6,8))
 def set_arpoperation(arpbuf,opera):
-	op = [(opera & 0xFF00)>>8,(opera & 0x00FF)]
+	# all three of these work, need to decide what to standardize on. Probably native python .to_bytes()
+	#op = [(opera & 0xFF00)>>8,(opera & 0x00FF)]
+	#op = word2bytes(opera)
+	op = opera.to_bytes(2,byteorder='big')
 	set_bytes(arpbuf, 6,8, op)
 def arpsendermacaddr(arpbuf):
 	return utils.ethjoinaddress(get_bytes(arpbuf,8,14))

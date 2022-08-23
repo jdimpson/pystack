@@ -18,21 +18,38 @@ class Unbuffered(object):
 
 sys.stdout = Unbuffered(sys.stdout)
 
-iface = "eth0"
+alen = len(sys.argv)
+if alen > 1:
+        myip  = sys.argv[1]
+else:
+        myip  = '10.0.0.5'
 
-if len(sys.argv) > 1:
-	iface = sys.argv[1]
+if alen > 2:
+        iface = sys.argv[2]
+else:
+        iface = "eth0"
+
+if alen > 3:
+        mymac = sys.argv[3]
+else:
+        mymac = 'aa:bb:cc:dd:ee:ff'
 
 raw = stack.rawif.bringupraw(iface=iface,promisc=True)
-mymac = "aa:bb:cc:cc:bb:aa"
 bcast = "ff:ff:ff:ff:ff:ff"
-pe = stack.process.packetEngine(myipv4addr="10.0.0.5", mymacaddr=mymac)
+pe = stack.process.packetEngine(myipv4addr=myip, mymacaddr=mymac)
+printed_skip = False
 while True:
 	# Read an Ethernet frame that's been sent to this device.
 	ethframe = stack.rawif.readrawethframe(raw)
 	if not stack.eth.dstfilter(mymac,ethframe,asbytes=True) and not stack.eth.dstfilter(bcast,ethframe,asbytes=True): 
-		print("skip")
+		if not printed_skip:
+			print("skip", end='')
+			printed_skip = True
+		else:
+			print(".", end='')
 		continue
+	printed_skip=False
+	print()
 	try:
 		info,out = pe.processEth(ethframe)
 		for i in info: print(i)
