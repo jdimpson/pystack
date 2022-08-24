@@ -20,15 +20,35 @@ There are no explicit dependencies, but I'm sure lots of implicit ones.
 	sleep 1
 	ping 192.168.7.2
 
+Sets up a tunnel device then will respond to ICMP echo requests
+
 ### ICMP ping responder using a TAP device as the interface
 	sudo ./tap.py &
 	sleep 1
 	ping 192.168.7.2
 
+Sets up a tap device then will respond to ICMP echo and ARP requests 
+
 ### Send an LLC/loop/ECTP frame over a raw interface
-	tcpdump ether proto 0x900 &
+	sudo tcpdump ether proto 0x9000 &
 	sleep 5
 	sudo ./sendloopraw.py
+
+Doesn't do anything except create a single Ethernet frame with 0x9000 in the EtherType field. 0x9000 is the reserved value for Ethernet Configuration Testing Protocol (ECTP). ECTP isn't in common use, although apparently is the basis for thoe LLC Loop detecting packets you see in Wireshark sometimes. I thought it would be cool to implement more of the ECTP functions. Then I got distracted by shinier things.
+
+See https://aminems.github.io/ctp.html for more information.
+
+### Send gratuitous ARP requests
+	sudo tcpdump arp &
+	sleep 5
+	sudo ./gratuitousarp.py 10.0.0.5 eth0 aa:bb:cc:dd:ee:ff
+
+You know, gratuitous ARP.
+
+### Simple stupid user mode end point
+	sudo ./usermodeendpoint.py 10.0.0.5 eth0 aa:bb:cc:dd:ee:ff
+
+My first serious attempt at a user mode TCP/IP stack. It's kind of a superset of some of the above functions. Right now it responds to ICMP pings, sends an RST to all TCP SYNs, and responds to ARP. I'd like it to eventually respond to TCP SYNs and allow session creation, to the point that it will proxy the stdin/stdout over the TCP session, similar to how netcat works.
 
 ## Windows Support
 requires https://github.com/orweis/winpcapy
