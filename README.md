@@ -50,5 +50,10 @@ You know, gratuitous ARP.
 
 My first serious attempt at a user mode TCP/IP stack. It's kind of a superset of some of the above functions. Right now it responds to ICMP pings, sends an RST to all TCP SYNs, and responds to ARP. I'd like it to eventually respond to TCP SYNs and allow session creation, to the point that it will proxy the stdin/stdout over the TCP session, similar to how netcat works.
 
+### Simple "virtual" SYSLOG server
+	sudo ./syslogd.py 10.0.0.5 eth0 aa:bb:cc:dd:ee:ff
+
+Essentially the same as usermodeendpoint above, but only displays syslog messages. Will respond to ARP and ping. This is essentially a simple syslog server riding on a usermode ip stack. I think this can be legitmately useful for building a simulated network, or a low overhead service for a multi-container virtual machine or docker environment, or for an application-level controlled hot standby service--it would be easy for one system to run this, and another pings it; if the pings fail, the second one can run its copy which will take over the service nearly seamlessly.
+
 ## Windows Support
 requires https://github.com/orweis/winpcapy

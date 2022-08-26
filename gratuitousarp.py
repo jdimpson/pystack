@@ -5,6 +5,12 @@ import stack.eth
 import stack.process
 import stack.utils
 
+# from https://www.rfc-editor.org/rfc/rfc5227
+# In this document, the term 'ARP Announcement' is used to refer to an ARP Request packet, broadcast on the local link, identical to the ARP
+# Probe described above, except that both the sender and target IP address fields contain the IP address being announced.  It conveys a
+# stronger statement than an ARP Probe, namely, "This is the address I am now using."
+
+
 
 alen = len(sys.argv)
 if alen > 1:

@@ -21,7 +21,16 @@ VLANDBLTYPE  = 0x9100
 ARPREQUEST   = 1
 ARPREPLY     = 2
 ARPETHTYPE   = 1
-
+ARP_PROBE_WAIT          =  1 # second   (initial random delay)
+ARP_PROBE_NUM           =  3 #          (number of probe packets)
+ARP_PROBE_MIN           =  1 # second   (minimum delay until repeated probe)
+ARP_PROBE_MAX           =  2 # seconds  (maximum delay until repeated probe)
+ARP_ANNOUNCE_WAIT       =  2 # seconds  (delay before announcing)
+ARP_ANNOUNCE_NUM        =  2 #          (number of Announcement packets)
+ARP_ANNOUNCE_INTERVAL   =  2 # seconds  (time between Announcement packets)
+ARP_MAX_CONFLICTS       = 10 #          (max conflicts before rate-limiting)
+ARP_RATE_LIMIT_INTERVAL = 60 # seconds  (delay between successive attempts)
+ARP_DEFEND_INTERVAL     = 10 # seconds  (minimum interval between defensive ARPs)
 
 ###
 # MAC Header
@@ -71,6 +80,15 @@ def dstfilter(mac,ethframe,asbytes=False):
 	if isinstance(mac,str):
 		mac = ethaddress_asints(mac)
 	m=ethdstaddress(ethframe,asbytes=asbytes)
+
+	if mac == m:
+		return True
+	return False
+
+def srcfilter(mac,ethframe,asbytes=False):
+	if isinstance(mac,str):
+		mac = ethaddress_asints(mac)
+	m=ethsrcaddress(ethframe,asbytes=asbytes)
 
 	if mac == m:
 		return True
