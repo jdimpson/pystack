@@ -37,6 +37,7 @@ else:
 raw = stack.rawif.bringupraw(iface=iface,promisc=True)
 bcast = "ff:ff:ff:ff:ff:ff"
 pe = stack.process.packetEngine(myipv4addr=myip, mymacaddr=mymac)
+pe.report_layers=False
 while True:
 	# Read an Ethernet frame that's been sent to this device.
 	ethframe = stack.rawif.readrawethframe(raw)
@@ -45,8 +46,12 @@ while True:
 	try:
 		info,out = pe.processEth(ethframe)
 		for i in info: 
+			if i[-1] == '\n':
+				end = ''
+			else:
+				end = '\n'
 			if "SYSLOG" in i:
-				print(i,end='')
+				print(i,end=end)
 		if out:
 			stack.rawif.writerawethframe(raw,out)
 	except stack.process.IgnorePacket as e:

@@ -9,14 +9,19 @@ from . import ipv4
 class IgnorePacket(Exception):
 	pass
 
-def report(layer, info):
-	return [ "{}:{}".format(layer,i) for i in info ]
 
 class packetEngineBase(object):
+	def report(self, layer, info):
+		if self.report_layers:
+			return [ "{}:{}".format(layer,i) for i in info ]
+		else:
+			return info
+
 	def __init__(self, ttl=8, myipv4addr=None, mymacaddr=None, mcastipv4s=[]):
 		self.ttl=ttl
 		self.myipv4addrs = [ ]
 		self.mymacaddrs  = [ ]
+		self.report_layers = True
 		if mymacaddr is not None or myipv4addr is not None:
 			self.myipv4addrs.append(myipv4addr)
 			self.mymacaddrs.append(mymacaddr)
@@ -92,7 +97,7 @@ class packetEngine(packetEngineBase):
 			eth.set_srcmac(ethframe, utils.ethsplitaddress(self.mymacaddrs[0]))
 
 			o = ethframe
-		return report("ETH", info), o
+		return self.report("ETH", info), o
 
 	def processLLC(self, llcframe, respond=False):
 		info = []
@@ -118,7 +123,7 @@ class packetEngine(packetEngineBase):
 		info.append("LLC PAYLOAD")
 		for x in utils.hexdump(pay): info.append(x)
 
-		return report("LLC", info), None
+		return self.report("LLC", info), None
 
 	def processARP(self,arpbuf, respond=False):
 		info = []
@@ -164,7 +169,7 @@ class packetEngine(packetEngineBase):
 					eth.arpswapsendertarget(arpbuf)
 					o = arpbuf
 
-		return report("ARP", info), o
+		return self.report("ARP", info), o
 
 	# This is needed as an entry point on TUN interfaces which handle either kind of IP packet, but not Ethernet frames
 	def processIP(self, ippacket):
@@ -178,7 +183,7 @@ class packetEngine(packetEngineBase):
 			return self.processIPv6(ippacket)
 		else:
 			info.append("Unknown / not an IPv4 packet: {}".format(ipver))
-			return report("IPvX", info), None
+			return self.report("IPvX", info), None
 
 	def processIPv4(self, ippacket):
 		info = []
@@ -187,7 +192,7 @@ class packetEngine(packetEngineBase):
 
 		if ipver != ipv4.VERSION:
 			info.append("Unknown / not an IPv4 packet")
-			return report("IPv4", info), None
+			return self.report("IPv4", info), None
 
 		tome = False
 
@@ -227,7 +232,7 @@ class packetEngine(packetEngineBase):
 			s = ipv4.ipcomputechecksum(ippacket)
 			ipv4.set_ipchecksum(ippacket,s)
 
-		return report("IPv4", info), o
+		return self.report("IPv4", info), o
 
 	def processICMPv4(self,ippacket, respond=False):
 		info = []
@@ -247,7 +252,7 @@ class packetEngine(packetEngineBase):
 		else:
 			info.append("Don't currently handle ICMP type {}".format(type))
 
-		return report("ICMPv4", info), o
+		return self.report("ICMPv4", info), o
 
 	def processTCP(self, ippacket, respond=False):
 		info = []
@@ -270,9 +275,9 @@ class packetEngine(packetEngineBase):
 		if f['syn']:
 			info.append("Responding to TCP SYN with TCP RST")
 			ipv4.tcpsynrst(ippacket)
-			return report("TCP", info), ippacket
+			return self.report("TCP", info), ippacket
 		else:
-			return report("TCP", info), None
+			return self.report("TCP", info), None
 
 	def processUDP(self, ippacket, respond=False):
 		info = []
@@ -307,11 +312,12 @@ class packetEngine(packetEngineBase):
 				info.append("{k}\t{v}".format(k=k,v=v))
 		elif dstport == 514:
 			#info.append("SYSLOG message")
+			s,d = ipv4.addresses(ippacket)
 			f,l = ipv4.faclev(ippacket)
 			mess = ipv4.message(ippacket)
-			info.append("SYSLOG {}.{} {}".format(f,l,mess))
+			info.append("SYSLOG {} {}.{} {}".format(s, f,l,mess))
 		# TODO: else: icmp response
-		return report("UDP", info), None
+		return self.report("UDP", info), None
 
 def processIPv6(ippacket,myttl=8):
 	info = []
@@ -337,6 +343,6 @@ def processIPv6(ippacket,myttl=8):
 	else:
 		info.append("Unknown / not an IPv6 packet")
 
-	return report("IPv6", info), o
+	return self.report("IPv6", info), o
 
 
