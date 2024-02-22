@@ -57,11 +57,6 @@ My first serious attempt at a user mode TCP/IP stack. It's kind of a superset of
 
 Essentially the same as usermodeendpoint above, but only displays syslog messages. Will respond to ARP and ping. This is essentially a simple syslog server riding on a usermode ip stack. I think this can be legitmately useful for building a simulated network, or a low overhead service for a multi-container virtual machine or docker environment, or for an application-level controlled hot standby service--it would be easy for one system to run this, and another pings it; if the pings fail, the second one can run its copy which will take over the service nearly seamlessly.
 
-### Send an LLC Loop packet
-	sudo ./sendloopraw.py 
-
-(Assumes eth0, that needs to be fixed) This isn't really  significant; it sends an LLC Loop packet like you may see coming from an Ethernet switch that is using some sort of STP protocol.
-
 ### Implement IP Conflict Detection per RFC 5227
 	sudo ./ipconflictdetec.py 10.0.0.5 eth0 aa:bb:cc:dd:ee:ff
 
