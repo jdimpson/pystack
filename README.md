@@ -12,8 +12,10 @@ But secretly also hoping to become a useful utility for unusual network tasks, s
 
 There are no explicit dependencies, but I'm sure lots of implicit ones.
 
+The usermode stack code is in `stack/`. The commands in the main folder are examples of using the stack, as follows:
+
 ### crude packet sniffer and decoder using raw sockets as the interface
-	sudo ./raw.py
+	sudo ./simplesniffer.py
 
 ### ICMP ping responder using a TUN device as the interface
 	sudo ./tun.py &
@@ -55,5 +57,20 @@ My first serious attempt at a user mode TCP/IP stack. It's kind of a superset of
 
 Essentially the same as usermodeendpoint above, but only displays syslog messages. Will respond to ARP and ping. This is essentially a simple syslog server riding on a usermode ip stack. I think this can be legitmately useful for building a simulated network, or a low overhead service for a multi-container virtual machine or docker environment, or for an application-level controlled hot standby service--it would be easy for one system to run this, and another pings it; if the pings fail, the second one can run its copy which will take over the service nearly seamlessly.
 
+### Send an LLC Loop packet
+	sudo ./sendloopraw.py 
+
+(Assumes eth0, that needs to be fixed) This isn't really  significant; it sends an LLC Loop packet like you may see coming from an Ethernet switch that is using some sort of STP protocol.
+
+### Implement IP Conflict Detection per RFC 5227
+	sudo ./ipconflictdetec.py 10.0.0.5 eth0 aa:bb:cc:dd:ee:ff
+
+Implementation of RFC 54227, which is designed to detect duplicate IP address use. I imagine using this before using any other command line pystack tool, to confirm that an IP address you want to use is available.
+
+Realistically, you'd just ping the address and proceed from there, but in theory you could use this as part of script automation.
+
 ## Windows Support
-requires https://github.com/orweis/winpcapy
+requires [https://github.com/orweis/winpcapy](https://github.com/orweis/winpcapy)
+
+There are a few windows-related programs here, but I don't know if they still work. 
+I don't have access to a Windows system with the necessary admin access to test them anymore. 
